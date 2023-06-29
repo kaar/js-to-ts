@@ -1,13 +1,8 @@
 import { useForm } from 'react-hook-form';
 import React, { useState, useEffect } from 'react';
 
-interface ConversationItem {
-    question: string;
-    answer: string;
-}
-
 function App() {
-    const [chatBoxState, setChatBoxState] = useState<ConversationItem[]>([]);
+    const [chatBoxState, setChatBoxState] = useState<any[]>([]);
     const [contextBox, setContextBox] = useState<string[]>([]);
     const {
         register,
@@ -25,9 +20,9 @@ function App() {
             }
         })
             .then((response) => response.json())
-            .then((data: string[]) => {
+            .then((data) => {
                 console.log(data);
-                setContextBox(data.slice(-1));
+                setContextBox(data.slice(-1)?.content);
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -49,10 +44,14 @@ function App() {
             })
         })
             .then((response) => response.json())
-            .then((data: ConversationItem) => {
+            .then((data) => {
                 console.log('Response:', data);
+                const conversationItem = {
+                    question: data.question,
+                    answer: data.answer
+                };
                 setChatBoxState((previousState) => {
-                    const nextState = [...previousState, data];
+                    const nextState = [...previousState, conversationItem];
                     return nextState;
                 });
             })
@@ -72,12 +71,14 @@ function App() {
             <p>Context: {contextBox}</p>
 
             <ul style={{ display: 'flex', flexDirection: 'column', maxWidth: '600px', border: '2px solid #ccc' }}>
-                {chatBoxState.map((item, i) => (
-                    <React.Fragment key={i}>
-                        <li style={{ marginLeft: 'auto' }}>{item.question}</li>
-                        <li style={{ marginRight: 'auto' }}>{item.answer}</li>
-                    </React.Fragment>
-                ))}
+                {chatBoxState.map((item, i) => {
+                    return (
+                        <React.Fragment key={i}>
+                            <li style={{ marginLeft: 'auto' }}>{item.question}</li>
+                            <li style={{ marginRight: 'auto' }}>{item.answer}</li>
+                        </React.Fragment>
+                    );
+                })}
             </ul>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <input defaultValue="test" {...register('question')} />

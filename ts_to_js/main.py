@@ -55,7 +55,7 @@ def openai_request(data) -> tuple[int, dict]:
 def main():
     instruction = {
         "role": "system",
-        "content": "Convert the following javascript code to typescript.",
+        "content": "Convert the following javascript code to typescript",
     }
     model = "gpt-3.5-turbo"
 
@@ -77,7 +77,7 @@ def main():
     js_code = {"role": "user", "content": data}
 
     response = ChatCompletion.create(
-        {"model": model, "messages": [instruction, js_code]}
+        {"model": model, "messages": [instruction, js_code], "temperature": 0.2}
     )
     print(response["choices"][0]["message"]["content"])
 

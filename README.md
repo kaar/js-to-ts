@@ -2,7 +2,10 @@
 
 ## Usage
 ```bash
+# stdin input
 cat examples/App.js | python ts_to_js/main.py > examples/App.ts
+# File input
+python ts_to_js/main.py examples/App.js > examples/App-2.ts
 ```
 
 
