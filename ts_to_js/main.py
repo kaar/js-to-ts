@@ -1,21 +1,15 @@
 import json
+import logging
 import os
 import sys
-from dataclasses import asdict, is_dataclass
-from datetime import datetime
 
 import requests
 
+logging.basicConfig(level=logging.INFO)
+LOGGER = logging.getLogger(__name__)
+
+
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-
-
-class CustomJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if is_dataclass(obj):
-            return asdict(obj)
-        if isinstance(obj, datetime):
-            return obj.isoformat()
-        return super().default(obj)
 
 
 class ChatCompletion:
@@ -26,7 +20,9 @@ class ChatCompletion:
 
         https://platform.openai.com/docs/guides/chat
         """
+        LOGGER.debug("request: %s", json.dumps(request, indent=2))
         status, data = openai_request(request)
+        LOGGER.debug("response: %s", json.dumps(data, indent=2))
         if status == 200:
             return data
         else:
@@ -48,7 +44,7 @@ def openai_request(data) -> tuple[int, dict]:
             "Authorization": f"Bearer {OPENAI_API_KEY}",
             "Content-Type": "application/json",
         },
-        data=json.dumps(data, cls=CustomJSONEncoder),
+        data=json.dumps(data),
         files=None,
         stream=False,
         timeout=600,
@@ -59,11 +55,25 @@ def openai_request(data) -> tuple[int, dict]:
 def main():
     instruction = {
         "role": "system",
-        "content": "Convert the following javascript code to typescript",
+        "content": "Convert the following javascript code to typescript.",
     }
     model = "gpt-3.5-turbo"
 
-    data = sys.stdin.read()
+    if "--debug" in sys.argv:
+        LOGGER.setLevel(logging.DEBUG)
+        sys.argv.remove("--debug")
+
+    # If argument
+    if len(sys.argv) > 1:
+        file_name = sys.argv[1]
+        with open(file_name, "r") as f:
+            input = f.read()
+
+        data = f"{file_name}:\n"
+        data += input
+    else:
+        data = sys.stdin.read()
+
     js_code = {"role": "user", "content": data}
 
     response = ChatCompletion.create(
