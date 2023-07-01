@@ -1,4 +1,8 @@
 # JS -> TS
+Experimental tool to convert code between javascript and typescript.
+
+This is not intended to be a working tool for code conversation but rather
+an experiment to see how useful such a tool can be with minimal effort.
 
 ## Install
 Requires [pipx](https://github.com/pypa/pipx)
