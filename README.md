@@ -1,5 +1,13 @@
 # JS -> TS
 
+## Install
+Requires [pipx](https://github.com/pypa/pipx)
+
+```bash
+git clone https://github.com/kaar/js-to-ts
+pipx install .
+```
+
 ## Usage
 ```bash
 # stdin input
